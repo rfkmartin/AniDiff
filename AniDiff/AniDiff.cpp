@@ -2,9 +2,10 @@
 //
 
 #include "stdafx.h"
+#include <stdio.h>
 #include "AniDiff.h"
 
-int _tmain(int argc, _TCHAR* argv[])
+int main(int argc, char *argv[])
 {
    int h,w,d;
 
@@ -16,13 +17,27 @@ int _tmain(int argc, _TCHAR* argv[])
    Mat RGB[3];
    Mat rgb[3];
    Mat edges[3];
-   int iterations=500;
-   float edgestop=10.0;
-   float diffusing=50.0;
+   char fname[64];
+   int iterations;
+   double edgestop;
+   double diffusing;
+   char inputf[64];
+   char outputf[64];
+   double scale;
+   int ksize;
+   double kernelscale;
 
-   original    = imread("..//IMG_6070.JPG",CV_LOAD_IMAGE_COLOR);
-//   original    = imread("..//stevie.png",CV_LOAD_IMAGE_COLOR);
-   resize(original,resized,Size(),0.25,0.25,INTER_CUBIC);
+   strcpy_s(inputf,argv[1]);
+   strcpy_s(outputf,argv[2]);
+   scale = (double)atof(argv[3]);
+   iterations = atoi(argv[4]);
+   edgestop = (double)atof(argv[5]);
+   diffusing = (double)atof(argv[6]);
+   ksize = atoi(argv[7]);
+   kernelscale = 1.0/(pow(2.0,ksize)-4);
+
+   original = imread(inputf,CV_LOAD_IMAGE_COLOR);
+   resize(original,resized,Size(),scale,scale,INTER_CUBIC);
    h = resized.rows;
    w = resized.cols;
    d = resized.depth();
@@ -33,23 +48,22 @@ int _tmain(int argc, _TCHAR* argv[])
    temp = Mat(h,w,CV_64F);
    Edges  = Mat(h,w,CV_64F);
    output = resized.clone();
-   namedWindow("Original",CV_WINDOW_AUTOSIZE);
-   imshow("Original",resized);
+
 
    split(resized,RGB);
    RGB[0].convertTo(rgb[0],CV_64F);
    RGB[1].convertTo(rgb[1],CV_64F);
    RGB[2].convertTo(rgb[2],CV_64F);
-   Sobel(RGB[0],GradH,CV_64F,0,1,3,1.0/1.0);
-   Sobel(RGB[0],GradV,CV_64F,1,0,3,1.0/1.0);
+   Sobel(RGB[0],GradH,CV_64F,0,1,3,1.0);
+   Sobel(RGB[0],GradV,CV_64F,1,0,3,1.0);
    temp=GradH.mul(GradH)+GradV.mul(GradV);
    sqrt(temp,edges[0]);
-   Sobel(RGB[1],GradH,CV_64F,0,1,3,1.0/1.0);
-   Sobel(RGB[1],GradV,CV_64F,1,0,3,1.0/1.0);
+   Sobel(RGB[1],GradH,CV_64F,0,1,3,1.0);
+   Sobel(RGB[1],GradV,CV_64F,1,0,3,1.0);
    temp=GradH.mul(GradH)+GradV.mul(GradV);
    sqrt(temp,edges[1]);
-   Sobel(RGB[2],GradH,CV_64F,0,1,3,1.0/1.0);
-   Sobel(RGB[2],GradV,CV_64F,1,0,3,1.0/1.0);
+   Sobel(RGB[2],GradH,CV_64F,0,1,3,1.0);
+   Sobel(RGB[2],GradV,CV_64F,1,0,3,1.0);
    temp=GradH.mul(GradH)+GradV.mul(GradV);
    sqrt(temp,edges[2]);
    Edges=((edges[0]+edges[1]+edges[2])/3)>100;
@@ -57,8 +71,6 @@ int _tmain(int argc, _TCHAR* argv[])
    RGB[1]=RGB[1].mul(1-Edges);
    RGB[2]=RGB[2].mul(1-Edges);
    merge(RGB,3,output);
-   imshow("Original with edges",output);
-   waitKey(0);
 
    for (int i=0;i<iterations;i++)
    {
@@ -78,21 +90,27 @@ int _tmain(int argc, _TCHAR* argv[])
          rgb[j].convertTo(RGB[j],CV_8U);
       }
       merge(RGB,3,output);
-      if (i%25==0)
+      if (i%100==0)
       {
-         //imshow("Output",input);
-         printf("%d\n",i);
-         //waitKey(330);
+         sprintf_s(fname,"%s_%05d.jpg",outputf,i);
+         imwrite(fname,output);
+         RGB[0]=RGB[0].mul(1-Edges);
+         RGB[1]=RGB[1].mul(1-Edges);
+         RGB[2]=RGB[2].mul(1-Edges);
+         merge(RGB,3,output);
+         sprintf_s(fname,"%s_edges_%05d.jpg",outputf,i);
+         imwrite(fname,output);
       }
    }
 
+   sprintf_s(fname,"%s_%05d.jpg",outputf,iterations);
+   imwrite(fname,output);
    RGB[0]=RGB[0].mul(1-Edges);
    RGB[1]=RGB[1].mul(1-Edges);
    RGB[2]=RGB[2].mul(1-Edges);
    merge(RGB,3,output);
-   imwrite("../final.jpg",output);
-   printf("done\n");
-   waitKey(0);
+   sprintf_s(fname,"%s_edges_%05d.jpg",outputf,iterations);
+   imwrite(fname,output);
    return 0;
 }
 
