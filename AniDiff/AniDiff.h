@@ -12,4 +12,5 @@ using namespace std;  // std c++ libs implemented in std
 
 #ifdef GCC_BUILD
 #define sprintf_s sprintf
+#define strcpy_s strcpy
 #endif

@@ -11,4 +11,3 @@ segmenter:
 .PHONY: clean
 clean:
 	make --directory="AniDiff/" --file=anidiff.makefile clean
-

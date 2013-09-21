@@ -1,7 +1,9 @@
 // AniDiff.cpp : Defines the entry point for the console application.
 //
 
+#ifdef _MSC_VER
 #include "stdafx.h"
+#endif
 #include <stdio.h>
 #include "AniDiff.h"
 
