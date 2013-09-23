@@ -46,7 +46,7 @@
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="4"
 			/>
@@ -61,7 +61,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opencv_highgui244d.lib opencv_core244d.lib opencv_objdetect244.lib opencv_imgproc244.lib"
+				AdditionalDependencies="opencv_highgui246d.lib opencv_core246d.lib opencv_objdetect246.lib opencv_imgproc246.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="C:\OpenCV\build\x86\vc9\lib"
 				GenerateDebugInformation="true"
@@ -121,7 +121,7 @@
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -136,7 +136,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opencv_highgui244.lib opencv_core244.lib opencv_objdetect244.lib opencv_imgproc244.lib"
+				AdditionalDependencies="opencv_highgui246.lib opencv_core246.lib opencv_objdetect246.lib opencv_imgproc246.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="C:\OpenCV\build\x86\vc9\lib"
 				GenerateDebugInformation="true"
