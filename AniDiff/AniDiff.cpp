@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
    char outputf[64];
    double scale;
    int ksize;
-   double kernelscale;
+   int kernelscale[2][10]={0,8,0,10,0,14,0,18,0,22,0,10,0,11,0,14,0,17,0,20};
 
    strcpy_s(inputf,argv[1]);
    strcpy_s(outputf,argv[2]);
@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
    edgestop = (double)atof(argv[5]);
    diffusing = (double)atof(argv[6]);
    ksize = atoi(argv[7]);
-   kernelscale = 1.0/(pow(2.0,ksize)-4);
 
    original = imread(inputf,CV_LOAD_IMAGE_COLOR);
    resize(original,resized,Size(),scale,scale,INTER_CUBIC);
@@ -56,16 +55,16 @@ int main(int argc, char *argv[])
    RGB[0].convertTo(rgb[0],CV_64F);
    RGB[1].convertTo(rgb[1],CV_64F);
    RGB[2].convertTo(rgb[2],CV_64F);
-   Sobel(RGB[0],GradH,CV_64F,0,1,3,1.0);
-   Sobel(RGB[0],GradV,CV_64F,1,0,3,1.0);
+   Sobel(RGB[0],GradH,CV_64F,0,1,3);
+   Sobel(RGB[0],GradV,CV_64F,1,0,3);
    temp=GradH.mul(GradH)+GradV.mul(GradV);
    sqrt(temp,edges[0]);
-   Sobel(RGB[1],GradH,CV_64F,0,1,3,1.0);
-   Sobel(RGB[1],GradV,CV_64F,1,0,3,1.0);
+   Sobel(RGB[1],GradH,CV_64F,0,1,3);
+   Sobel(RGB[1],GradV,CV_64F,1,0,3);
    temp=GradH.mul(GradH)+GradV.mul(GradV);
    sqrt(temp,edges[1]);
-   Sobel(RGB[2],GradH,CV_64F,0,1,3,1.0);
-   Sobel(RGB[2],GradV,CV_64F,1,0,3,1.0);
+   Sobel(RGB[2],GradH,CV_64F,0,1,3);
+   Sobel(RGB[2],GradV,CV_64F,1,0,3);
    temp=GradH.mul(GradH)+GradV.mul(GradV);
    sqrt(temp,edges[2]);
    Edges=((edges[0]+edges[1]+edges[2])/3)>100;
@@ -79,15 +78,15 @@ int main(int argc, char *argv[])
       for (int j=0;j<3;j++)
       {
          // gradient
-         Sobel(rgb[j],GradH,-1,0,1,7,1.0/1024.0);
-         Sobel(rgb[j],GradV,-1,1,0,7,1.0/1024.0);
+         Sobel(rgb[j],GradH,-1,0,1,3,1.0/pow(2.0,kernelscale[0][ksize]));
+         Sobel(rgb[j],GradV,-1,1,0,3,1.0/pow(2.0,kernelscale[0][ksize]));
 
          // edge stopping factor
          temp=GradH.mul(GradH)+GradV.mul(GradV);
          g = 1.0/(1.0+edgestop*temp);
 
          // Div of gradient
-         Laplacian(rgb[j],temp,CV_64F,7,1.0/65536.0);
+         Laplacian(rgb[j],temp,CV_64F,3,1.0/pow(2.0,kernelscale[1][ksize]));
           rgb[j]=rgb[j]+diffusing*g.mul(temp);
          rgb[j].convertTo(RGB[j],CV_8U);
       }
