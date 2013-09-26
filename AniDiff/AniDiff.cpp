@@ -26,16 +26,18 @@ int main(int argc, char *argv[])
    char inputf[64];
    char outputf[64];
    double scale;
-   int ksize;
+   int ksize_e,ksize_d;
    int kernelscale[2][10]={0,8,0,10,0,14,0,18,0,22,0,10,0,11,0,14,0,17,0,20};
 
+   // USAGE failure case here
    strcpy_s(inputf,argv[1]);
    strcpy_s(outputf,argv[2]);
    scale = (double)atof(argv[3]);
    iterations = atoi(argv[4]);
    edgestop = (double)atof(argv[5]);
    diffusing = (double)atof(argv[6]);
-   ksize = atoi(argv[7]);
+   ksize_e = atoi(argv[7]);
+   ksize_d = atoi(argv[8]);
 
    original = imread(inputf,CV_LOAD_IMAGE_COLOR);
    resize(original,resized,Size(),scale,scale,INTER_CUBIC);
@@ -78,39 +80,39 @@ int main(int argc, char *argv[])
       for (int j=0;j<3;j++)
       {
          // gradient
-         Sobel(rgb[j],GradH,-1,0,1,3,1.0/pow(2.0,kernelscale[0][ksize]));
-         Sobel(rgb[j],GradV,-1,1,0,3,1.0/pow(2.0,kernelscale[0][ksize]));
+         Sobel(rgb[j],GradH,-1,0,1,3,1.0/pow(2.0,kernelscale[0][ksize_e]));
+         Sobel(rgb[j],GradV,-1,1,0,3,1.0/pow(2.0,kernelscale[0][ksize_e]));
 
          // edge stopping factor
          temp=GradH.mul(GradH)+GradV.mul(GradV);
          g = 1.0/(1.0+edgestop*temp);
 
          // Div of gradient
-         Laplacian(rgb[j],temp,CV_64F,3,1.0/pow(2.0,kernelscale[1][ksize]));
+         Laplacian(rgb[j],temp,CV_64F,3,1.0/pow(2.0,kernelscale[1][ksize_d]));
           rgb[j]=rgb[j]+diffusing*g.mul(temp);
          rgb[j].convertTo(RGB[j],CV_8U);
       }
       merge(RGB,3,output);
       if (i%100==0)
       {
-         sprintf_s(fname,"%s_%05d.jpg",outputf,i);
+         sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
          imwrite(fname,output);
          RGB[0]=RGB[0].mul(1-Edges);
          RGB[1]=RGB[1].mul(1-Edges);
          RGB[2]=RGB[2].mul(1-Edges);
          merge(RGB,3,output);
-         sprintf_s(fname,"%s_edges_%05d.jpg",outputf,i);
+         sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
          imwrite(fname,output);
       }
    }
 
-   sprintf_s(fname,"%s_%05d.jpg",outputf,iterations);
+   sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,iterations);
    imwrite(fname,output);
    RGB[0]=RGB[0].mul(1-Edges);
    RGB[1]=RGB[1].mul(1-Edges);
    RGB[2]=RGB[2].mul(1-Edges);
    merge(RGB,3,output);
-   sprintf_s(fname,"%s_edges_%05d.jpg",outputf,iterations);
+   sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,iterations);
    imwrite(fname,output);
    return 0;
 }
