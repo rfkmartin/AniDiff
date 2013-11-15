@@ -30,14 +30,27 @@ int main(int argc, char *argv[])
    int kernelscale[2][10]={0,8,0,10,0,14,0,18,0,22,0,10,0,11,0,14,0,17,0,20};
 
    // USAGE failure case here
+   if (argc<9)
+   {
+      printf("error. too few inputs %d\n",argc);
+      return 0;
+   }
    strcpy_s(inputf,argv[1]);
+   printf("input %s\n",inputf);
    strcpy_s(outputf,argv[2]);
+   printf("output %s\n",outputf);
    scale = (double)atof(argv[3]);
+   printf("scale %f\n",scale);
    iterations = atoi(argv[4]);
+   printf("iterations %d\n",iterations);
    edgestop = (double)atof(argv[5]);
+   printf("edgestop %f\n",edgestop);
    diffusing = (double)atof(argv[6]);
+   printf("diffusing %f\n",diffusing);
    ksize_e = atoi(argv[7]);
+   printf("ksize_e %d\n",ksize_e);
    ksize_d = atoi(argv[8]);
+   printf("ksize_d %d\n",ksize_d);
 
    original = imread(inputf,CV_LOAD_IMAGE_COLOR);
    resize(original,resized,Size(),scale,scale,INTER_CUBIC);
@@ -101,7 +114,7 @@ int main(int argc, char *argv[])
          RGB[1]=RGB[1].mul(1-Edges);
          RGB[2]=RGB[2].mul(1-Edges);
          merge(RGB,3,output);
-         sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
+         sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d_edges.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
          imwrite(fname,output);
       }
    }
@@ -112,7 +125,7 @@ int main(int argc, char *argv[])
    RGB[1]=RGB[1].mul(1-Edges);
    RGB[2]=RGB[2].mul(1-Edges);
    merge(RGB,3,output);
-   sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,iterations);
+   sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d_edges.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,iterations);
    imwrite(fname,output);
    return 0;
 }
