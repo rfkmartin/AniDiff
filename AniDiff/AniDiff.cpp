@@ -19,12 +19,12 @@ int main(int argc, char *argv[])
    Mat RGB[3];
    Mat rgb[3];
    Mat edges[3];
-   char fname[64];
+   char fname[256];
    int iterations;
    double edgestop;
    double diffusing;
-   char inputf[64];
-   char outputf[64];
+   char inputf[256];
+   char outputf[256];
    double scale;
    int ksize_e,ksize_d;
    int kernelscale[2][10]={0,8,0,10,0,14,0,18,0,22,0,10,0,11,0,14,0,17,0,20};
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
          rgb[j].convertTo(RGB[j],CV_8U);
       }
       merge(RGB,3,output);
-      if (i%100==0)
+      if (i%500==0)
       {
          sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
          imwrite(fname,output);
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
          RGB[1]=RGB[1].mul(1-Edges);
          RGB[2]=RGB[2].mul(1-Edges);
          merge(RGB,3,output);
-         sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d_edges.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
+         sprintf_s(fname,"%s_edge_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,i);
          imwrite(fname,output);
       }
    }
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
    RGB[1]=RGB[1].mul(1-Edges);
    RGB[2]=RGB[2].mul(1-Edges);
    merge(RGB,3,output);
-   sprintf_s(fname,"%s_%d_%d_%4.2f_%4.2f_%05d_edges.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,iterations);
+   sprintf_s(fname,"%s_edge_%d_%d_%4.2f_%4.2f_%05d.jpg",outputf,ksize_e,ksize_d,edgestop,diffusing,iterations);
    imwrite(fname,output);
    return 0;
 }
